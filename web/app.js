@@ -136,15 +136,15 @@ class DefaultExternalServices {
     throw new Error("Cannot initialize DefaultExternalServices.");
   }
 
-  static updateFindControlState(data) {}
+  static updateFindControlState(data) { }
 
-  static updateFindMatchesCount(data) {}
+  static updateFindMatchesCount(data) { }
 
-  static initPassiveLoading(callbacks) {}
+  static initPassiveLoading(callbacks) { }
 
-  static fallback(data, callback) {}
+  static fallback(data, callback) { }
 
-  static reportTelemetry(data) {}
+  static reportTelemetry(data) { }
 
   static createDownloadManager(options) {
     throw new Error("Not implemented: createDownloadManager");
@@ -1344,9 +1344,9 @@ const PDFViewerApplication = {
     // Provides some basic debug information
     console.log(
       `PDF ${pdfDocument.fingerprint} [${info.PDFFormatVersion} ` +
-        `${(info.Producer || "-").trim()} / ${(info.Creator || "-").trim()}] ` +
-        `(PDF.js: ${version || "-"}` +
-        `${this.pdfViewer.enableWebGL ? " [WebGL]" : ""})`
+      `${(info.Producer || "-").trim()} / ${(info.Creator || "-").trim()}] ` +
+      `(PDF.js: ${version || "-"}` +
+      `${this.pdfViewer.enableWebGL ? " [WebGL]" : ""})`
     );
 
     let pdfTitle;
@@ -2134,7 +2134,7 @@ function webViewerSidebarViewChanged(evt) {
   const store = PDFViewerApplication.store;
   if (store && PDFViewerApplication.isInitialViewSet) {
     // Only update the storage when the document has been loaded *and* rendered.
-    store.set("sidebarView", evt.view).catch(function () {});
+    store.set("sidebarView", evt.view).catch(function () { });
   }
 }
 
@@ -2173,7 +2173,7 @@ function webViewerScrollModeChanged(evt) {
   const store = PDFViewerApplication.store;
   if (store && PDFViewerApplication.isInitialViewSet) {
     // Only update the storage when the document has been loaded *and* rendered.
-    store.set("scrollMode", evt.mode).catch(function () {});
+    store.set("scrollMode", evt.mode).catch(function () { });
   }
 }
 
@@ -2181,7 +2181,7 @@ function webViewerSpreadModeChanged(evt) {
   const store = PDFViewerApplication.store;
   if (store && PDFViewerApplication.isInitialViewSet) {
     // Only update the storage when the document has been loaded *and* rendered.
-    store.set("spreadMode", evt.mode).catch(function () {});
+    store.set("spreadMode", evt.mode).catch(function () { });
   }
 }
 
@@ -2279,10 +2279,10 @@ function webViewerLastPage() {
   }
 }
 function webViewerNextPage() {
-  PDFViewerApplication.page++;
+  PDFViewerApplication.page += PDFViewerApplication.pdfViewer._getVisiblePages().views.length;
 }
 function webViewerPreviousPage() {
-  PDFViewerApplication.page--;
+  PDFViewerApplication.page -= PDFViewerApplication.pdfViewer._getVisiblePages().views.length;
 }
 function webViewerZoomIn() {
   PDFViewerApplication.zoomIn();
@@ -2768,11 +2768,17 @@ function webViewerKeyDown(evt) {
     ) {
       if (turnPage > 0) {
         if (PDFViewerApplication.page < PDFViewerApplication.pagesCount) {
-          PDFViewerApplication.page++;
+          PDFViewerApplication.page += PDFViewerApplication.pdfViewer._getVisiblePages().views.length;
+          if ((PDFViewerApplication.page + PDFViewerApplication.pdfViewer._getVisiblePages().views.length) > PDFViewerApplication.pagesCount) {
+            PDFViewerApplication.page++;
+          }
         }
       } else {
         if (PDFViewerApplication.page > 1) {
-          PDFViewerApplication.page--;
+          PDFViewerApplication.page -= PDFViewerApplication.pdfViewer._getVisiblePages().views.length;
+          if ((PDFViewerApplication.page - PDFViewerApplication.pdfViewer._getVisiblePages().views.length) <= 1) {
+            PDFViewerApplication.page--;
+          }
         }
       }
       handled = true;
